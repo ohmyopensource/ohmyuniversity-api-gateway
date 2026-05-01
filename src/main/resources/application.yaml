@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    default: dev
+  application:
+    name: ohmyuniversity-gateway
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          secret-key: ${JWT_SECRET}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: always
