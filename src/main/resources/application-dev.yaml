@@ -1,9 +1,36 @@
 spring:
   data:
     redis:
-      host: localhost
-      port: 6379
-      password: redis_dev_password
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+  cloud:
+    gateway:
+      routes:
+        - id: core-service
+          uri: ${CORE_SERVICE_URL}
+          predicates:
+            - Path=/api/core/**
+          filters:
+            - StripPrefix=2
+        - id: chat-service
+          uri: ${CHAT_SERVICE_URL}
+          predicates:
+            - Path=/api/chat/**
+          filters:
+            - StripPrefix=2
+        - id: billing-service
+          uri: ${BILLING_SERVICE_URL}
+          predicates:
+            - Path=/api/billing/**
+          filters:
+            - StripPrefix=2
+        - id: fetcher-service
+          uri: ${FETCHER_SERVICE_URL}
+          predicates:
+            - Path=/api/fetcher/**
+          filters:
+            - StripPrefix=2
 
 springdoc:
   api-docs:

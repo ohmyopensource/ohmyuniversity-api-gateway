@@ -63,7 +63,7 @@ OhMyUniversity! is an open source university platform designed to simplify acade
 ### Prerequisites
 
 - Java 21+
-- Maven 4.0.6+
+- Maven 3.9+
 - Docker
 
 

@@ -37,7 +37,33 @@
 		<spring-cloud.version>2025.1.1</spring-cloud.version>
 	</properties>
 
+	<!--
+	================================
+  DEPENDENCY MANAGEMENT
+  ================================
+-->
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- Spring Cloud BOM -->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
+
+		<!-- DotEnv -->
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>3.2.0</version>
+		</dependency>
 
 		<!-- Reactive Gateway -->
 		<dependency>
@@ -106,25 +132,6 @@
 		</dependency>
 
 	</dependencies>
-
-<!--
-	================================
-  DEPENDENCY MANAGEMENT
-  ================================
--->
-	<dependencyManagement>
-		<dependencies>
-
-			<!-- Spring Cloud BOM -->
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>

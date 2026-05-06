@@ -1,0 +1,19 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6370
+  cloud:
+    gateway:
+      routes: []
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    org.ohmyopensource: DEBUG
+    org.springframework.cloud.gateway: DEBUG
