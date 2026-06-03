@@ -1,13 +1,24 @@
+# ============================================================
+# OhMyUniversity! - API Gateway
+# Base configuration - shared across all profiles.
+#
+# Routes are defined programmatically in GatewayRoutesConfig
+# and injected via @Value with per-profile defaults.
+# ============================================================
+
 spring:
   profiles:
     default: dev
   application:
     name: ohmyuniversity-gateway
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          secret-key: ${JWT_SECRET}
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:redis}
 
 server:
   port: 8080
@@ -20,3 +31,10 @@ management:
   endpoint:
     health:
       show-details: always
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    export:
+      enabled: false

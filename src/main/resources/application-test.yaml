@@ -1,17 +1,34 @@
+# ============================================================
+# OhMyUniversity! - API Gateway
+# Test profile.
+#
+# - Redis points to a dedicated test instance (port 6370)
+#   started by Testcontainers or a local test Redis
+# - Swagger disabled - not needed in test context
+# - DEBUG logging for gateway internals during test runs
+# - OTel export disabled
+# ============================================================
+
 spring:
   data:
     redis:
       host: localhost
       port: 6370
-  cloud:
-    gateway:
-      routes: []
 
 springdoc:
   api-docs:
     enabled: false
   swagger-ui:
     enabled: false
+
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    export:
+      enabled: false
 
 logging:
   level:
