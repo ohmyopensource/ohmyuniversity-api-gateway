@@ -4,6 +4,7 @@ import org.ohmyopensource.ohmyuniversity.gateway.routes.AuthRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.CanteenRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.CarrieraRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.ChatRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.ExternalServicesRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.FetcherRoutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class GatewayRoutesConfig {
 
   private final AuthRoutes authRoutes;
   private final CarrieraRoutes carrieraRoutes;
+  private final ExternalServicesRoutes externalServicesRoutes;
   private final CanteenRoutes canteenRoutes;
   private final ChatRoutes chatRoutes;
   private final FetcherRoutes fetcherRoutes;
@@ -45,20 +47,23 @@ public class GatewayRoutesConfig {
   /**
    * Creates a new {@code GatewayRoutesConfig} instance with all domain route registries.
    *
-   * @param authRoutes route definitions for authentication endpoints
-   * @param carrieraRoutes route definitions for academic/career-related endpoints
-   * @param canteenRoutes route definitions for canteen service endpoints
-   * @param chatRoutes route definitions for chat service endpoints
-   * @param fetcherRoutes route definitions for external data fetching endpoints
+   * @param authRoutes             route definitions for authentication endpoints
+   * @param carrieraRoutes         route definitions for academic/career-related endpoints
+   * @param externalServicesRoutes route definitions for external university service URLs
+   * @param canteenRoutes          route definitions for canteen service endpoints
+   * @param chatRoutes             route definitions for chat service endpoints
+   * @param fetcherRoutes          route definitions for external data fetching endpoints
    */
   public GatewayRoutesConfig(
       AuthRoutes authRoutes,
       CarrieraRoutes carrieraRoutes,
+      ExternalServicesRoutes externalServicesRoutes,
       CanteenRoutes canteenRoutes,
       ChatRoutes chatRoutes,
       FetcherRoutes fetcherRoutes) {
     this.authRoutes = authRoutes;
     this.carrieraRoutes = carrieraRoutes;
+    this.externalServicesRoutes = externalServicesRoutes;
     this.canteenRoutes = canteenRoutes;
     this.chatRoutes = chatRoutes;
     this.fetcherRoutes = fetcherRoutes;
@@ -69,15 +74,16 @@ public class GatewayRoutesConfig {
   /**
    * Builds and registers all API Gateway routes.
    *
-   * <p> Each domain-specific route registry contributes its own route definitions to the global
+   * <p>Each domain-specific route registry contributes its own route definitions to the global
    * {@link RouteLocatorBuilder.Builder}.
    *
    * <p>Registration order:
-   * - Authentication routes
-   * - Academic/career routes
-   * - Canteen routes
-   * - Chat routes
-   * - Fetcher routes
+   * - Authentication routes (public)
+   * - Academic/career routes (protected)
+   * - External university services routes (protected)
+   * - Canteen routes (protected)
+   * - Chat routes (protected)
+   * - Fetcher routes (public)
    *
    * @param builder the Spring Cloud Gateway route builder
    * @return a fully built {@link RouteLocator} containing all registered routes
@@ -90,6 +96,7 @@ public class GatewayRoutesConfig {
 
     b = authRoutes.register(b);
     b = carrieraRoutes.register(b);
+    b = externalServicesRoutes.register(b);
     b = canteenRoutes.register(b);
     b = chatRoutes.register(b);
     b = fetcherRoutes.register(b);
