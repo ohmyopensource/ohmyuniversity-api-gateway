@@ -18,14 +18,16 @@ public class GatewaySecurityConfig {
    * List of URI prefixes that are excluded from JWT authentication.
    *
    * <p>These endpoints are accessible without authentication:
-   * - /v1/auth/ → authentication endpoints (login, refresh, logout)
-   * - /v1/fetcher/ → public analytics and statistics
-   * - /actuator/ → health checks and monitoring endpoints
-   * - /swagger-ui → API documentation UI
-   * - /v3/api-docs → OpenAPI specification
+   * - /v1/auth/ -> authentication endpoints
+   * - /v1/email/auth/callback -> OAuth2 callback from Microsoft
+   * - /v1/fetcher/ -> public analytics and statistics
+   * - /actuator/ -> health checks and monitoring endpoints
+   * - /swagger-ui -> API documentation UI
+   * - /v3/api-docs -> OpenAPI specification
    */
   private static final List<String> PUBLIC_PREFIXES = List.of(
       "/v1/auth/",
+      "/v1/email/auth/callback",
       "/v1/fetcher/",
       "/actuator/",
       "/swagger-ui",

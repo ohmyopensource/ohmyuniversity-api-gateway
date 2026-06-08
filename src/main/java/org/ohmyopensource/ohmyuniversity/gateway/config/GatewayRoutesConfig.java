@@ -4,6 +4,7 @@ import org.ohmyopensource.ohmyuniversity.gateway.routes.AuthRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.CanteenRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.CarrieraRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.ChatRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.EmailRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.ExternalServicesRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.FetcherRoutes;
 import org.slf4j.Logger;
@@ -19,16 +20,17 @@ import org.springframework.context.annotation.Configuration;
  * <p>This component aggregates all domain-specific route definitions and exposes them as a single
  * {@link RouteLocator} bean used by Spring Cloud Gateway.
  *
- * <p>Each domain (auth, carriera, canteen, chat, fetcher) is implemented in a dedicated route
- * class under the {@code routes} package. This class is responsible only for orchestration
- * and registration.
+ * <p>Each domain is implemented in a dedicated route class under the {@code routes} package.
+ * This class is responsible only for orchestration and registration.
  *
  * <p>Exposed API structure:
- * - POST /v1/auth/login → core:8083/api/v1/auth/login
- * - GET /v1/carriera/libretto → core:8083/api/v1/carriera/libretto
- * - GET /v1/canteen/menu → canteen:8082/api/v1/canteen/menu
- * - GET /v1/chat/messages → chat:8081/api/v1/chat/messages
- * - GET /v1/fetcher/stats → fetcher:8080/api/v1/fetcher/stats
+ * - POST /v1/auth/login                    → core:8083/api/v1/auth/login
+ * - GET  /v1/carriera/libretto             → core:8083/api/v1/carriera/libretto
+ * - GET  /v1/university/external-services  → core:8083/api/v1/university/external-services
+ * - GET  /v1/email/inbox                   → core:8083/api/v1/email/inbox
+ * - GET  /v1/canteen/menu                  → canteen:8082/api/v1/canteen/menu
+ * - GET  /v1/chat/messages                 → chat:8081/api/v1/chat/messages
+ * - GET  /v1/fetcher/stats                 → fetcher:8080/api/v1/fetcher/stats
  */
 @Configuration
 public class GatewayRoutesConfig {
@@ -38,6 +40,7 @@ public class GatewayRoutesConfig {
   private final AuthRoutes authRoutes;
   private final CarrieraRoutes carrieraRoutes;
   private final ExternalServicesRoutes externalServicesRoutes;
+  private final EmailRoutes emailRoutes;
   private final CanteenRoutes canteenRoutes;
   private final ChatRoutes chatRoutes;
   private final FetcherRoutes fetcherRoutes;
@@ -50,6 +53,7 @@ public class GatewayRoutesConfig {
    * @param authRoutes             route definitions for authentication endpoints
    * @param carrieraRoutes         route definitions for academic/career-related endpoints
    * @param externalServicesRoutes route definitions for external university service URLs
+   * @param emailRoutes            route definitions for institutional email endpoints
    * @param canteenRoutes          route definitions for canteen service endpoints
    * @param chatRoutes             route definitions for chat service endpoints
    * @param fetcherRoutes          route definitions for external data fetching endpoints
@@ -58,12 +62,14 @@ public class GatewayRoutesConfig {
       AuthRoutes authRoutes,
       CarrieraRoutes carrieraRoutes,
       ExternalServicesRoutes externalServicesRoutes,
+      EmailRoutes emailRoutes,
       CanteenRoutes canteenRoutes,
       ChatRoutes chatRoutes,
       FetcherRoutes fetcherRoutes) {
     this.authRoutes = authRoutes;
     this.carrieraRoutes = carrieraRoutes;
     this.externalServicesRoutes = externalServicesRoutes;
+    this.emailRoutes = emailRoutes;
     this.canteenRoutes = canteenRoutes;
     this.chatRoutes = chatRoutes;
     this.fetcherRoutes = fetcherRoutes;
@@ -81,6 +87,7 @@ public class GatewayRoutesConfig {
    * - Authentication routes (public)
    * - Academic/career routes (protected)
    * - External university services routes (protected)
+   * - Email routes (mixed — callback is public, rest protected)
    * - Canteen routes (protected)
    * - Chat routes (protected)
    * - Fetcher routes (public)
@@ -97,6 +104,7 @@ public class GatewayRoutesConfig {
     b = authRoutes.register(b);
     b = carrieraRoutes.register(b);
     b = externalServicesRoutes.register(b);
+    b = emailRoutes.register(b);
     b = canteenRoutes.register(b);
     b = chatRoutes.register(b);
     b = fetcherRoutes.register(b);
