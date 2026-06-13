@@ -47,7 +47,8 @@ public class AuthRoutes {
     return builder
         .route("auth-login", r -> r
             .path("/v1/auth/**")
-            .filters(f -> f.rewritePath("/v1/(?<segment>.*)", "/api/v1/${segment}"))
+            .filters(f -> f.rewritePath(
+                "/v1/(?<segment>.*)", "/api/v1/${segment}"))
             .uri(coreServiceUrl));
   }
 }

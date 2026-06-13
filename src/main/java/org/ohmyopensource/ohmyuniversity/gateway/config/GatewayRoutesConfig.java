@@ -1,6 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.config;
 
 import org.ohmyopensource.ohmyuniversity.gateway.routes.AuthRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.CalendarRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.CanteenRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.CarrieraRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.ChatRoutes;
@@ -24,13 +25,14 @@ import org.springframework.context.annotation.Configuration;
  * This class is responsible only for orchestration and registration.
  *
  * <p>Exposed API structure:
- * - POST /v1/auth/login                    → core:8083/api/v1/auth/login
- * - GET  /v1/carriera/libretto             → core:8083/api/v1/carriera/libretto
- * - GET  /v1/university/external-services  → core:8083/api/v1/university/external-services
- * - GET  /v1/email/inbox                   → core:8083/api/v1/email/inbox
- * - GET  /v1/canteen/menu                  → canteen:8082/api/v1/canteen/menu
- * - GET  /v1/chat/messages                 → chat:8081/api/v1/chat/messages
- * - GET  /v1/fetcher/stats                 → fetcher:8080/api/v1/fetcher/stats
+ * - POST /v1/auth/login                    -> core:8083/api/v1/auth/login
+ * - POST /v1/calendar/events               -> core:8083/api/v1/calendar/events
+ * - GET  /v1/carriera/libretto             -> core:8083/api/v1/carriera/libretto
+ * - GET  /v1/university/external-services  -> core:8083/api/v1/university/external-services
+ * - GET  /v1/email/inbox                   -> core:8083/api/v1/email/inbox
+ * - GET  /v1/canteen/menu                  -> canteen:8082/api/v1/canteen/menu
+ * - GET  /v1/chat/messages                 -> chat:8081/api/v1/chat/messages
+ * - GET  /v1/fetcher/stats                 -> fetcher:8080/api/v1/fetcher/stats
  */
 @Configuration
 public class GatewayRoutesConfig {
@@ -38,6 +40,7 @@ public class GatewayRoutesConfig {
   private static final Logger log = LoggerFactory.getLogger(GatewayRoutesConfig.class);
 
   private final AuthRoutes authRoutes;
+  private final CalendarRoutes calendarRoutes;
   private final CarrieraRoutes carrieraRoutes;
   private final ExternalServicesRoutes externalServicesRoutes;
   private final EmailRoutes emailRoutes;
@@ -51,6 +54,7 @@ public class GatewayRoutesConfig {
    * Creates a new {@code GatewayRoutesConfig} instance with all domain route registries.
    *
    * @param authRoutes             route definitions for authentication endpoints
+   * @param calendarRoutes         route definitions for calendar endpoints
    * @param carrieraRoutes         route definitions for academic/career-related endpoints
    * @param externalServicesRoutes route definitions for external university service URLs
    * @param emailRoutes            route definitions for institutional email endpoints
@@ -60,6 +64,7 @@ public class GatewayRoutesConfig {
    */
   public GatewayRoutesConfig(
       AuthRoutes authRoutes,
+      CalendarRoutes calendarRoutes,
       CarrieraRoutes carrieraRoutes,
       ExternalServicesRoutes externalServicesRoutes,
       EmailRoutes emailRoutes,
@@ -67,6 +72,7 @@ public class GatewayRoutesConfig {
       ChatRoutes chatRoutes,
       FetcherRoutes fetcherRoutes) {
     this.authRoutes = authRoutes;
+    this.calendarRoutes = calendarRoutes;
     this.carrieraRoutes = carrieraRoutes;
     this.externalServicesRoutes = externalServicesRoutes;
     this.emailRoutes = emailRoutes;
@@ -85,6 +91,7 @@ public class GatewayRoutesConfig {
    *
    * <p>Registration order:
    * - Authentication routes (public)
+   * - Calendar routes (protected)
    * - Academic/career routes (protected)
    * - External university services routes (protected)
    * - Email routes (mixed — callback is public, rest protected)
@@ -102,6 +109,7 @@ public class GatewayRoutesConfig {
     var b = builder.routes();
 
     b = authRoutes.register(b);
+    b = calendarRoutes.register(b);
     b = carrieraRoutes.register(b);
     b = externalServicesRoutes.register(b);
     b = emailRoutes.register(b);

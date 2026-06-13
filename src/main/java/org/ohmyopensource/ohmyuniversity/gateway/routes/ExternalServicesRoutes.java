@@ -51,7 +51,8 @@ public class ExternalServicesRoutes {
     return builder
         .route("external-services", r -> r
             .path("/v1/university/**")
-            .filters(f -> f.rewritePath("/v1/(?<segment>.*)", "/api/v1/${segment}"))
+            .filters(f -> f.rewritePath(
+                "/v1/(?<segment>.*)", "/api/v1/${segment}"))
             .uri(coreServiceUrl));
   }
 }

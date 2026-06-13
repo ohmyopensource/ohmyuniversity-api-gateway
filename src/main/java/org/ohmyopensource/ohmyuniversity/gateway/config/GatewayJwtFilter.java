@@ -80,16 +80,16 @@ public class GatewayJwtFilter implements GlobalFilter, Ordered {
   /**
    * Applies JWT authentication to incoming requests.
    *
-   * <p>If the request path is public, the filter is bypassed. Otherwise:
-   *
-   * <p>Steps performed:
-   * - Validate presence and format of Authorization header
-   * - Parse and validate JWT token
-   * - Extract user identifier from token claims
-   * - Propagate identity via X-User-Id header
+   * <p>If the request path is public, the filter is bypassed. Otherwise the following
+   * steps are performed:
+   * - Validate presence and format of the Authorization header
+   * - Parse and validate the JWT token signature and expiration
+   * - Extract the user identifier from the token subject claim
+   * - Propagate the identity via the X-User-Id request header
+   * - Forward the original Authorization header to downstream services
    *
    * @param exchange the current server web exchange containing request and response
-   * @param chain the Gateway filter chain used to forward the request
+   * @param chain    the Gateway filter chain used to forward the request
    * @return a {@link Mono} completing when request processing is done
    */
   @Override
@@ -121,7 +121,9 @@ public class GatewayJwtFilter implements GlobalFilter, Ordered {
       String omuUserId = claims.getSubject();
 
       ServerWebExchange mutated = exchange.mutate()
-          .request(r -> r.header(X_USER_ID, omuUserId))
+          .request(r -> r
+              .header(X_USER_ID, omuUserId)
+              .header(HttpHeaders.AUTHORIZATION, authHeader))
           .build();
 
       log.debug("GatewayJwtFilter: authenticated user={} path={}", omuUserId, path);

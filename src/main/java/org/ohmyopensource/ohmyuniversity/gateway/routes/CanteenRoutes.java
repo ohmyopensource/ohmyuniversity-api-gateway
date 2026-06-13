@@ -48,7 +48,8 @@ public class CanteenRoutes {
     return builder
         .route("canteen", r -> r
             .path("/v1/canteen/**")
-            .filters(f -> f.rewritePath("/v1/(?<segment>.*)", "/api/v1/${segment}"))
+            .filters(f -> f.rewritePath(
+                "/v1/(?<segment>.*)", "/api/v1/${segment}"))
             .uri(canteenServiceUrl));
   }
 }

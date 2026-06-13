@@ -45,7 +45,8 @@ public class FetcherRoutes {
     return builder
         .route("fetcher", r -> r
             .path("/v1/fetcher/**")
-            .filters(f -> f.rewritePath("/v1/(?<segment>.*)", "/api/v1/${segment}"))
+            .filters(f -> f.rewritePath(
+                "/v1/(?<segment>.*)", "/api/v1/${segment}"))
             .uri(fetcherServiceUrl));
   }
 }

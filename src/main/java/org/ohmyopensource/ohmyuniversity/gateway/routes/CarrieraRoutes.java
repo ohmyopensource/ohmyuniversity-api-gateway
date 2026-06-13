@@ -52,7 +52,8 @@ public class CarrieraRoutes {
     return builder
         .route("carriera", r -> r
             .path("/v1/carriera/**")
-            .filters(f -> f.rewritePath("/v1/(?<segment>.*)", "/api/v1/${segment}"))
+            .filters(f -> f.rewritePath(
+                "/v1/(?<segment>.*)", "/api/v1/${segment}"))
             .uri(coreServiceUrl));
   }
 }

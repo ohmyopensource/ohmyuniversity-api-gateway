@@ -60,7 +60,8 @@ public class EmailRoutes {
     return builder
         .route("email", r -> r
             .path("/v1/email/**")
-            .filters(f -> f.rewritePath("/v1/(?<segment>.*)", "/api/v1/${segment}"))
+            .filters(f -> f.rewritePath(
+                "/v1/(?<segment>.*)", "/api/v1/${segment}"))
             .uri(coreServiceUrl));
   }
 }
