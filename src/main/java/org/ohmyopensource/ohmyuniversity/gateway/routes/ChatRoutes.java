@@ -8,14 +8,15 @@ import org.springframework.stereotype.Component;
  * Route configuration for chat-related endpoints.
  *
  * <p>These routes are protected and require a valid OhMyUniversity JWT.
- * Authentication is enforced
- * by {@link org.ohmyopensource.ohmyuniversity.gateway.config.GatewayJwtFilter}.
+ * Authentication is enforced by
+ * {@link org.ohmyopensource.ohmyuniversity.gateway.config.GatewayJwtFilter}.
  *
  * <p>Exposed chat endpoints:
- * - GET /v1/chat/channels
- * - GET /v1/chat/messages
- * - POST /v1/chat/messages
- * - GET /v1/chat/ws (WebSocket upgrade)
+ * - GET  /v1/chat/channels/{channelId}               -> channel metadata
+ * - GET  /v1/chat/channels/{channelId}/members       -> channel members
+ * - GET  /v1/chat/channels/{channelId}/messages      -> message history
+ * - PATCH /v1/chat/channels/{channelId}/closes-at    -> advance closing timestamp (TEACHER_ADMIN)
+ * - GET  /v1/chat/ws
  */
 @Component
 public class ChatRoutes {
