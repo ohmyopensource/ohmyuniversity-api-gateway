@@ -16,9 +16,11 @@ import org.springframework.stereotype.Component;
  * - GET /v1/carriera/medie
  * - GET /v1/carriera/piano
  * - GET /v1/carriera/appelli
+ * - GET /v1/carriera/appelli-prenotabili
  * - POST /v1/carriera/prenotazioni
  * - GET /v1/carriera/tasse
  * - GET /v1/carriera/badge
+ * - GET /v1/carriera/esami-suggeriti
  */
 @Component
 public class CarrieraRoutes {
