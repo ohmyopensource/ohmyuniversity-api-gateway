@@ -1,13 +1,16 @@
 package org.ohmyopensource.ohmyuniversity.gateway.config;
 
+import org.ohmyopensource.ohmyuniversity.gateway.routes.AgendaRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.AuthRoutes;
-import org.ohmyopensource.ohmyuniversity.gateway.routes.CalendarRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.CanteenRoutes;
-import org.ohmyopensource.ohmyuniversity.gateway.routes.CarrieraRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.ChatRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.EmailRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.ExternalServicesRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.FetcherRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.CareerRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.ExamsRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.FeesRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.ProfileRoutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -18,30 +21,77 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Central configuration class for API Gateway route registration.
  *
- * <p>This component aggregates all domain-specific route definitions and exposes them as a single
+ * <p>Aggregates all domain-specific route definitions and exposes them as a single
  * {@link RouteLocator} bean used by Spring Cloud Gateway.
  *
- * <p>Each domain is implemented in a dedicated route class under the {@code routes} package.
- * This class is responsible only for orchestration and registration.
+ * <p>ESSE3-backed routes live under {@code routes/esse3/} and map to the core service.
+ * OhMyU-native routes live directly under {@code routes/}.
  *
  * <p>Exposed API structure:
- * - POST /v1/auth/login                    -> core:8083/api/v1/auth/login
- * - POST /v1/calendar/events               -> core:8083/api/v1/calendar/events
- * - GET  /v1/carriera/libretto             -> core:8083/api/v1/carriera/libretto
- * - GET  /v1/university/external-services  -> core:8083/api/v1/university/external-services
- * - GET  /v1/email/inbox                   -> core:8083/api/v1/email/inbox
- * - GET  /v1/canteen/menu                  -> canteen:8082/api/v1/canteen/menu
- * - GET  /v1/chat/messages                 -> chat:8081/api/v1/chat/messages
- * - GET  /v1/fetcher/stats                 -> fetcher:8080/api/v1/fetcher/stats
+ * <pre>
+ * Auth
+ *   POST /v1/auth/**               → core:8083
+ *
+ * Profile (ESSE3 — anagrafica-service, carriere-service, badge-service)
+ *   GET  /v1/profile/persona       → core:8083
+ *   GET  /v1/profile/info          → core:8083
+ *   GET  /v1/profile/avatar        → core:8083
+ *   GET  /v1/profile/badge         → core:8083
+ *
+ * Career (ESSE3 — libretto-service, piani-service)
+ *   GET  /v1/career/transcript     → core:8083
+ *   GET  /v1/career/grades         → core:8083
+ *   GET  /v1/career/study-plan     → core:8083
+ *   GET  /v1/career/exam-history   → core:8083
+ *   GET  /v1/career/recommendations→ core:8083
+ *
+ * Exams (ESSE3 — calesa-service, libretto-service, questionari-service)
+ *   GET  /v1/exams/sessions        → core:8083
+ *   GET  /v1/exams/bookable        → core:8083
+ *   GET  /v1/exams/bookings        → core:8083
+ *   POST /v1/exams/bookings/legacy → core:8083
+ *   GET  /v1/exams/surveys         → core:8083
+ *
+ * Fees (ESSE3 — tasse-service)
+ *   GET  /v1/fees/status           → core:8083
+ *   GET  /v1/fees/invoices         → core:8083
+ *   GET  /v1/fees/refunds          → core:8083
+ *   GET  /v1/fees/payments         → core:8083
+ *
+ * Agenda (OhMyU native + university events)
+ *   GET|POST|PUT|DELETE /v1/agenda/events/**            → core:8083
+ *   GET|POST            /v1/agenda/university-events/** → core:8083
+ *
+ * Email
+ *   /v1/email/**                   → core:8083
+ *
+ * External services
+ *   /v1/university/**              → core:8083
+ *
+ * Canteen
+ *   /v1/canteen/**                 → canteen:8082
+ *
+ * Chat
+ *   /v1/chat/**                    → chat:8081
+ *
+ * Fetcher (public)
+ *   /v1/fetcher/**                 → fetcher:8084
+ * </pre>
  */
 @Configuration
 public class GatewayRoutesConfig {
 
   private static final Logger log = LoggerFactory.getLogger(GatewayRoutesConfig.class);
 
+  // ESSE3-backed routes
+  private final ProfileRoutes profileRoutes;
+  private final CareerRoutes careerRoutes;
+  private final ExamsRoutes examsRoutes;
+  private final FeesRoutes feesRoutes;
+
+  // OhMyU-native routes
   private final AuthRoutes authRoutes;
-  private final CalendarRoutes calendarRoutes;
-  private final CarrieraRoutes carrieraRoutes;
+  private final AgendaRoutes agendaRoutes;
   private final ExternalServicesRoutes externalServicesRoutes;
   private final EmailRoutes emailRoutes;
   private final CanteenRoutes canteenRoutes;
@@ -50,30 +100,24 @@ public class GatewayRoutesConfig {
 
   // ============ Constructor ============
 
-  /**
-   * Creates a new {@code GatewayRoutesConfig} instance with all domain route registries.
-   *
-   * @param authRoutes             route definitions for authentication endpoints
-   * @param calendarRoutes         route definitions for calendar endpoints
-   * @param carrieraRoutes         route definitions for academic/career-related endpoints
-   * @param externalServicesRoutes route definitions for external university service URLs
-   * @param emailRoutes            route definitions for institutional email endpoints
-   * @param canteenRoutes          route definitions for canteen service endpoints
-   * @param chatRoutes             route definitions for chat service endpoints
-   * @param fetcherRoutes          route definitions for external data fetching endpoints
-   */
   public GatewayRoutesConfig(
+      ProfileRoutes profileRoutes,
+      CareerRoutes careerRoutes,
+      ExamsRoutes examsRoutes,
+      FeesRoutes feesRoutes,
       AuthRoutes authRoutes,
-      CalendarRoutes calendarRoutes,
-      CarrieraRoutes carrieraRoutes,
+      AgendaRoutes agendaRoutes,
       ExternalServicesRoutes externalServicesRoutes,
       EmailRoutes emailRoutes,
       CanteenRoutes canteenRoutes,
       ChatRoutes chatRoutes,
       FetcherRoutes fetcherRoutes) {
+    this.profileRoutes = profileRoutes;
+    this.careerRoutes = careerRoutes;
+    this.examsRoutes = examsRoutes;
+    this.feesRoutes = feesRoutes;
     this.authRoutes = authRoutes;
-    this.calendarRoutes = calendarRoutes;
-    this.carrieraRoutes = carrieraRoutes;
+    this.agendaRoutes = agendaRoutes;
     this.externalServicesRoutes = externalServicesRoutes;
     this.emailRoutes = emailRoutes;
     this.canteenRoutes = canteenRoutes;
@@ -86,18 +130,8 @@ public class GatewayRoutesConfig {
   /**
    * Builds and registers all API Gateway routes.
    *
-   * <p>Each domain-specific route registry contributes its own route definitions to the global
-   * {@link RouteLocatorBuilder.Builder}.
-   *
-   * <p>Registration order:
-   * - Authentication routes (public)
-   * - Calendar routes (protected)
-   * - Academic/career routes (protected)
-   * - External university services routes (protected)
-   * - Email routes (mixed — callback is public, rest protected)
-   * - Canteen routes (protected)
-   * - Chat routes (protected)
-   * - Fetcher routes (public)
+   * <p>Registration order: auth first (public), then ESSE3 routes,
+   * then OhMyU-native routes, then infrastructure routes (fetcher).
    *
    * @param builder the Spring Cloud Gateway route builder
    * @return a fully built {@link RouteLocator} containing all registered routes
@@ -108,11 +142,21 @@ public class GatewayRoutesConfig {
 
     var b = builder.routes();
 
+    // Auth (public endpoints)
     b = authRoutes.register(b);
-    b = calendarRoutes.register(b);
-    b = carrieraRoutes.register(b);
+
+    // ESSE3-backed routes
+    b = profileRoutes.register(b);
+    b = careerRoutes.register(b);
+    b = examsRoutes.register(b);
+    b = feesRoutes.register(b);
+
+    // OhMyU-native routes
+    b = agendaRoutes.register(b);
     b = externalServicesRoutes.register(b);
     b = emailRoutes.register(b);
+
+    // Other microservices
     b = canteenRoutes.register(b);
     b = chatRoutes.register(b);
     b = fetcherRoutes.register(b);
