@@ -26,7 +26,7 @@ public class FetcherRoutes {
    * @param fetcherServiceUrl base URL of the fetcher service used to forward requests
    */
   public FetcherRoutes(
-      @Value("${FETCHER_SERVICE_URL:http://localhost:8080}") String fetcherServiceUrl) {
+      @Value("${fetcher.service.url:http://localhost:8084}") String fetcherServiceUrl) {
     this.fetcherServiceUrl = fetcherServiceUrl;
   }
 

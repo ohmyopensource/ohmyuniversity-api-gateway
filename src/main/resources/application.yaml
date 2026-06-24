@@ -38,3 +38,7 @@ management:
   tracing:
     export:
       enabled: false
+
+fetcher:
+  service:
+    url: http://localhost:8084
