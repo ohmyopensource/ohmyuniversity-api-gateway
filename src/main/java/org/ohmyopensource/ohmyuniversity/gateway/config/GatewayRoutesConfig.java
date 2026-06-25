@@ -10,6 +10,7 @@ import org.ohmyopensource.ohmyuniversity.gateway.routes.FetcherRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.CareerRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.ExamsRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.FeesRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.InternshipsRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.ProfileRoutes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,9 @@ import org.springframework.context.annotation.Configuration;
  *   GET  /v1/fees/refunds          → core:8083
  *   GET  /v1/fees/payments         → core:8083
  *
+ * Internships (ESSE3 — tirocini-service)
+ *   GET  /v1/internships/applications → core:8083
+ *
  * Agenda (OhMyU native + university events)
  *   GET|POST|PUT|DELETE /v1/agenda/events/**            → core:8083
  *   GET|POST            /v1/agenda/university-events/** → core:8083
@@ -88,6 +92,7 @@ public class GatewayRoutesConfig {
   private final CareerRoutes careerRoutes;
   private final ExamsRoutes examsRoutes;
   private final FeesRoutes feesRoutes;
+  private final InternshipsRoutes internshipsRoutes;
 
   // OhMyU-native routes
   private final AuthRoutes authRoutes;
@@ -105,6 +110,7 @@ public class GatewayRoutesConfig {
       CareerRoutes careerRoutes,
       ExamsRoutes examsRoutes,
       FeesRoutes feesRoutes,
+      InternshipsRoutes internshipsRoutes,
       AuthRoutes authRoutes,
       AgendaRoutes agendaRoutes,
       ExternalServicesRoutes externalServicesRoutes,
@@ -116,6 +122,7 @@ public class GatewayRoutesConfig {
     this.careerRoutes = careerRoutes;
     this.examsRoutes = examsRoutes;
     this.feesRoutes = feesRoutes;
+    this.internshipsRoutes = internshipsRoutes;
     this.authRoutes = authRoutes;
     this.agendaRoutes = agendaRoutes;
     this.externalServicesRoutes = externalServicesRoutes;
@@ -150,6 +157,7 @@ public class GatewayRoutesConfig {
     b = careerRoutes.register(b);
     b = examsRoutes.register(b);
     b = feesRoutes.register(b);
+    b = internshipsRoutes.register(b);
 
     // OhMyU-native routes
     b = agendaRoutes.register(b);
