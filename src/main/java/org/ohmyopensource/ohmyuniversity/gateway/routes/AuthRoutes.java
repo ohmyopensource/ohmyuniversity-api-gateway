@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
  * - POST /v1/auth/login
  * - POST /v1/auth/refresh
  * - POST /v1/auth/logout
+ * - POST /v1/auth/switch-university
  */
 @Component
 public class AuthRoutes {
