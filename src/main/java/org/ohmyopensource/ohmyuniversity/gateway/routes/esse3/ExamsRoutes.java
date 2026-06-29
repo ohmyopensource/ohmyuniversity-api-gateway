@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
  *   <li>{@code GET  /v1/exams/bookings}         — active upcoming bookings</li>
  *   <li>{@code POST /v1/exams/bookings/legacy}  — full history (Basic Auth)</li>
  *   <li>{@code GET  /v1/exams/surveys}          — teaching evaluation surveys</li>
+ *   <li>{@code POST /v1/exams/bookings}         — book an exam (Basic Auth)</li>
+ *   <li>{@code POST /v1/exams/bookings/cancel}  — cancel a booking (Basic Auth)</li>
  * </ul>
  */
 @Component

@@ -52,6 +52,8 @@ import org.springframework.context.annotation.Configuration;
  *   GET  /v1/exams/bookings        → core:8083
  *   POST /v1/exams/bookings/legacy → core:8083
  *   GET  /v1/exams/surveys         → core:8083
+ *   POST /v1/exams/bookings          → core:8083
+ *   POST /v1/exams/bookings/cancel   → core:8083
  *
  * Fees (ESSE3 — tasse-service)
  *   GET  /v1/fees/status           → core:8083
