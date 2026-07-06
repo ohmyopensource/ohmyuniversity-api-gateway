@@ -8,6 +8,7 @@ import org.ohmyopensource.ohmyuniversity.gateway.routes.EmailRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.ExternalServicesRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.FetcherRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.CareerRoutes;
+import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.CourseCatalogueRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.ExamsRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.FeesRoutes;
 import org.ohmyopensource.ohmyuniversity.gateway.routes.esse3.InternshipsRoutes;
@@ -64,6 +65,10 @@ import org.springframework.context.annotation.Configuration;
  * Internships (ESSE3 — tirocini-service)
  *   GET  /v1/internships/applications → core:8083
  *
+ * Course Catalogue (Cineca Course Catalogue — separate product from ESSE3)
+ *   GET  /v1/course-catalogue/plan      → core:8083
+ *   GET  /v1/course-catalogue/syllabus  → core:8083
+ *
  * Agenda (OhMyU native + university events)
  *   GET|POST|PUT|DELETE /v1/agenda/events/**            → core:8083
  *   GET|POST            /v1/agenda/university-events/** → core:8083
@@ -95,6 +100,7 @@ public class GatewayRoutesConfig {
   private final ExamsRoutes examsRoutes;
   private final FeesRoutes feesRoutes;
   private final InternshipsRoutes internshipsRoutes;
+  private final CourseCatalogueRoutes courseCatalogueRoutes;
 
   // OhMyU-native routes
   private final AuthRoutes authRoutes;
@@ -113,6 +119,7 @@ public class GatewayRoutesConfig {
       ExamsRoutes examsRoutes,
       FeesRoutes feesRoutes,
       InternshipsRoutes internshipsRoutes,
+      CourseCatalogueRoutes courseCatalogueRoutes,
       AuthRoutes authRoutes,
       AgendaRoutes agendaRoutes,
       ExternalServicesRoutes externalServicesRoutes,
@@ -125,6 +132,7 @@ public class GatewayRoutesConfig {
     this.examsRoutes = examsRoutes;
     this.feesRoutes = feesRoutes;
     this.internshipsRoutes = internshipsRoutes;
+    this.courseCatalogueRoutes = courseCatalogueRoutes;
     this.authRoutes = authRoutes;
     this.agendaRoutes = agendaRoutes;
     this.externalServicesRoutes = externalServicesRoutes;
@@ -160,6 +168,7 @@ public class GatewayRoutesConfig {
     b = examsRoutes.register(b);
     b = feesRoutes.register(b);
     b = internshipsRoutes.register(b);
+    b = courseCatalogueRoutes.register(b);
 
     // OhMyU-native routes
     b = agendaRoutes.register(b);
