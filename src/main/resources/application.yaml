@@ -16,12 +16,12 @@ spring:
       - org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:redis}
+      host: ${REDIS_CACHE_HOST:localhost}
+      port: ${REDIS_CACHE_PORT:6379}
+      password: ${REDIS_CACHE_PASSWORD:redis}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 management:
   endpoints:
@@ -41,4 +41,4 @@ management:
 
 fetcher:
   service:
-    url: http://localhost:8084
+    url: http://localhost:8083
