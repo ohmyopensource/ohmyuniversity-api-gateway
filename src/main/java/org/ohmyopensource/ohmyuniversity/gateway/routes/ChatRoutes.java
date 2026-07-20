@@ -1,7 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,11 +12,15 @@ import org.springframework.stereotype.Component;
  * {@link org.ohmyopensource.ohmyuniversity.gateway.config.GatewayJwtFilter}.
  *
  * <p>Exposed chat endpoints:
- * - GET  /v1/chat/channels/{channelId}               -> channel metadata
- * - GET  /v1/chat/channels/{channelId}/members       -> channel members
- * - GET  /v1/chat/channels/{channelId}/messages      -> message history
- * - PATCH /v1/chat/channels/{channelId}/closes-at    -> advance closing timestamp (TEACHER_ADMIN)
- * - GET  /v1/chat/ws
+ * <ul>
+ *   <li>GET  /v1/chat/channels/{channelId}               -> channel metadata</li>
+ *   <li>GET  /v1/chat/channels/{channelId}/members       -> channel members</li>
+ *   <li>GET  /v1/chat/channels/{channelId}/messages      -> message history</li>
+ *   <li>PATCH /v1/chat/channels/{channelId}/closes-at    -> advance closing timestamp
+ *   (TEACHER_ADMIN)</li>
+ *   <li>GET /v1/chat/ws</li>
+ * </ul>
+ *
  */
 @Component
 public class ChatRoutes {
@@ -31,7 +35,7 @@ public class ChatRoutes {
    * @param chatServiceUrl base URL of the chat service used to forward chat-related requests
    */
   public ChatRoutes(
-      @Value("${CHAT_SERVICE_URL:http://localhost:8081}") String chatServiceUrl) {
+      @Value("${chat.service.url:http://localhost:8084}") String chatServiceUrl) {
     this.chatServiceUrl = chatServiceUrl;
   }
 
@@ -49,7 +53,7 @@ public class ChatRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing chat routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("chat", r -> r
             .path("/v1/chat/**")

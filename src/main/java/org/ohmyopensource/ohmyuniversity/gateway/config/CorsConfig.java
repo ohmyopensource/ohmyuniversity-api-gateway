@@ -14,38 +14,40 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
  * Applied globally to all gateway routes via {@link SecurityConfig}.
  *
  * <p>Allowed origins cover:
- * - Angular dev server (localhost:4200)
- * - Alternative local dev port (localhost:3000)
- * - Production and staging web clients (ohmyuniversity.it subdomains)
+ * <ul>
+ *   <li>Angular dev server (localhost:4200)</li>
+ *   <li>Alternative local dev port (localhost:3000)</li>
+ *   <li>Production and staging web clients (ohmyuniversity.it subdomains)</li>
+ * </ul>
  */
 @Configuration
 public class CorsConfig {
 
-    /**
-     * Defines CORS rules applied to all gateway routes.
-     *
-     * @return the reactive CORS configuration source
-     */
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
+  /**
+   * Defines CORS rules applied to all gateway routes.
+   *
+   * @return the reactive CORS configuration source
+   */
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:4200",
-                "http://localhost:3000",
-                "https://ohmyuniversity.it",
-                "https://www.ohmyuniversity.it",
-                "https://staging.ohmyuniversity.it"
-        ));
+    config.setAllowedOrigins(List.of(
+        "http://localhost:4200",
+        "http://localhost:3000",
+        "https://ohmyuniversity.it",
+        "https://www.ohmyuniversity.it",
+        "https://staging.ohmyuniversity.it"
+    ));
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setExposedHeaders(List.of("Authorization"));
+    config.setAllowCredentials(true);
+    config.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+  }
 }

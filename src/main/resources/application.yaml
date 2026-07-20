@@ -39,6 +39,32 @@ management:
     export:
       enabled: false
 
+omu:
+  jwt:
+    secret: ${JWT_SECRET}
+
+# Downstream microservice URLs — single source of truth for route defaults.
+# Each *Routes.java class reads its own key via @Value with a matching fallback.
+auth:
+  service:
+    url: ${AUTH_SERVICE_URL:http://localhost:8081}
+
+core:
+  service:
+    url: ${CORE_SERVICE_URL:http://localhost:8082}
+
 fetcher:
   service:
-    url: http://localhost:8083
+    url: ${FETCHER_SERVICE_URL:http://localhost:8083}
+
+chat:
+  service:
+    url: ${CHAT_SERVICE_URL:http://localhost:8084}
+
+canteen:
+  service:
+    url: ${CANTEEN_SERVICE_URL:http://localhost:8085}
+
+billing:
+  service:
+    url: ${BILLING_SERVICE_URL:http://localhost:8086}

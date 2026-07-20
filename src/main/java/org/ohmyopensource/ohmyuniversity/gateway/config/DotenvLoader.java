@@ -9,43 +9,52 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertiesPropertySource;
 
 /**
- * Loads environment variables from a local .env file into Spring's {@link ConfigurableEnvironment}.
+ * Spring EnvironmentPostProcessor responsible for loading environment variables from a local .env
+ * file into the Spring Environment.
  *
- * <p>This processor runs before the Spring application context is fully initialized in order to
- * ensure that placeholders (e.g. ${VAR}) inside application.yml or application.properties can be
- * correctly resolved.
+ * <p>This component runs before the application context is initialized, ensuring that placeholders
+ * defined in application.yaml (e.g. ${JWT_SECRET}) can be resolved correctly at startup time.
  *
- * <p>Only a predefined set of environment variables is loaded from the .env file, explicitly
- * ignoring system environment variables to avoid unexpected overrides.
+ * <p>The .env file is considered optional:
+ * <ul>
+ *   <li>In local development, it provides convenience for configuration.</li>
+ *   <li>In production/container environments (Docker, ECS, EKS), values are expected to be
+ *   injected via the runtime environment instead.</li>
+ * </ul>
  *
+ * <p>Any missing or malformed .env file is ignored silently to avoid blocking application startup.
  */
 public class DotenvLoader implements EnvironmentPostProcessor, Ordered {
 
   private static final String DOTENV_PROPERTY_SOURCE_NAME = "dotenvProperties";
 
   /**
-   * List of environment variable keys that will be loaded from the .env file.
+   * List of environment keys explicitly loaded from the .env file.
+   *
+   * <p>These keys define the gateway's runtime configuration: JWT signing secret,
+   * Redis session cache, and the base URLs of every downstream microservice the gateway routes to.
    */
   private static final String[] ENV_KEYS = {
       "SPRING_PROFILES_ACTIVE",
       "JWT_SECRET",
-      "REDIS_HOST",
-      "REDIS_PORT",
-      "REDIS_PASSWORD",
+      "REDIS_CACHE_HOST",
+      "REDIS_CACHE_PORT",
+      "REDIS_CACHE_PASSWORD",
+      "AUTH_SERVICE_URL",
       "CORE_SERVICE_URL",
+      "FETCHER_SERVICE_URL",
       "CHAT_SERVICE_URL",
-      "BILLING_SERVICE_URL",
-      "FETCHER_SERVICE_URL"
+      "CANTEEN_SERVICE_URL",
+      "BILLING_SERVICE_URL"
   };
 
   // ============ Override Methods ============
 
   /**
-   * Defines the loading order of this post-processor within the Spring environment
-   * initialization chain.
+   * Defines loading priority of this environment processor.
    *
-   * @return an integer representing the execution priority, where lower values have higher
-   *     priority
+   * <p>A high precedence ensures .env values are available early in the Spring bootstrap
+   * lifecycle.
    */
   @Override
   public int getOrder() {
@@ -53,16 +62,17 @@ public class DotenvLoader implements EnvironmentPostProcessor, Ordered {
   }
 
   /**
-   * Loads environment variables from the .env file and injects them into
-   * the Spring {@link ConfigurableEnvironment}.
+   * Loads .env variables and injects them into the Spring Environment.
    *
-   * <p>The method:
-   * - Loads the .env file from the current working directory
-   * - Extracts only the variables defined in {@link #ENV_KEYS}
-   * - Registers them as a high-priority property source in Spring
+   * <p>The process:
+   * <ul>
+   *   <li>loads .env file from working directory</li>
+   *   <li>extracts predefined keys</li>
+   *   <li>merges them into Spring PropertySources with the highest priority</li>
+   * </ul>
    *
-   * @param environment the Spring environment into which properties will be injected
-   * @param application the running Spring application instance
+   * <p>Failures are intentionally ignored to keep the application resilient in environments
+   * where .env is not present.
    */
   @Override
   public void postProcessEnvironment(
@@ -83,6 +93,7 @@ public class DotenvLoader implements EnvironmentPostProcessor, Ordered {
           String value = dotenv.get(key);
           props.put(key, value);
         } catch (Exception ignored) {
+          // Missing key is intentionally ignored
         }
       }
 
@@ -92,6 +103,7 @@ public class DotenvLoader implements EnvironmentPostProcessor, Ordered {
       }
 
     } catch (Exception e) {
+      // .env loading failure is non-blocking by design
     }
   }
 }

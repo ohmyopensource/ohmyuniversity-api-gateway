@@ -19,22 +19,28 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 /**
- * Global Spring Cloud Gateway filter responsible for validating JWT tokens for all
- * incoming requests.
+ * Global Spring Cloud Gateway filter responsible for validating JWT tokens for all incoming
+ * requests.
  *
  * <p>This filter ensures that every non-public request is authenticated using a valid JWT
- * issued by the system.
- * Public routes are defined in {@link GatewaySecurityConfig} and are excluded from authentication.
+ * issued by the auth service ({@code ohmyuniversity-auth}). Public routes are defined in
+ * {@link GatewaySecurityConfig} and are excluded from authentication.
  *
  * <p>Processing flow:
- * - Extract the Bearer token from the Authorization header
- * - Validate the JWT signature and expiration using the configured secret key
- * - Extract the user identifier from the token claims
- * - Inject the user identifier into the X-User-Id header for downstream services
+ * <ul>
+ *   <li>PropertySources with the highest priority</li>
+ *   <li>Extract the Bearer token from the Authorization header </li>
+ *   <li>Validate the JWT signature and expiration using the configured secret key</li>
+ *   <li>Extract the user identifier from the token claims</li>
+ *   <li>Inject the user identifier into the X-User-Id header for downstream services</li>
+ * </ul>
  *
- * <p>Downstream microservices rely on the X-User-Id header as a trusted identity source and
- * do not re-validate the JWT.
- * The Core service performs its own validation since it is both issuer and consumer of tokens.
+ * <p>Downstream microservices trust the X-User-Id header injected here as an identity
+ * hint, but each service that exposes protected endpoints (e.g. core) still performs its own JWT
+ * signature validation independently — the gateway's validation and each service's own validation
+ * are defense-in-depth, not a substitute for one another. All services must share the same
+ * {@code omu.jwt.secret} value, since auth is the sole issuer of tokens and every other service is
+ * a validator only.
  */
 @Component
 public class GatewayJwtFilter implements GlobalFilter, Ordered {
@@ -54,11 +60,11 @@ public class GatewayJwtFilter implements GlobalFilter, Ordered {
    * <p>The JWT signing key is derived from the configured secret and used to validate all
    * incoming tokens.
    *
-   * @param secret the JWT signing secret used to validate token signatures
+   * @param secret         the JWT signing secret used to validate token signatures
    * @param securityConfig configuration component defining public and protected routes
    */
   public GatewayJwtFilter(
-      @Value("${JWT_SECRET:omu_dev_jwt_secret_please_change_in_prod_ok}") String secret,
+      @Value("${omu.jwt.secret:omu_dev_jwt_secret_please_change_in_prod_ok}") String secret,
       GatewaySecurityConfig securityConfig) {
     this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     this.securityConfig = securityConfig;
@@ -80,13 +86,15 @@ public class GatewayJwtFilter implements GlobalFilter, Ordered {
   /**
    * Applies JWT authentication to incoming requests.
    *
-   * <p>If the request path is public, the filter is bypassed. Otherwise the following
+   * <p>If the request path is public, the filter is bypassed. Otherwise, the following
    * steps are performed:
-   * - Validate presence and format of the Authorization header
-   * - Parse and validate the JWT token signature and expiration
-   * - Extract the user identifier from the token subject claim
-   * - Propagate the identity via the X-User-Id request header
-   * - Forward the original Authorization header to downstream services
+   * <ul>
+   *   <li>Validate presence and format of the Authorization header</li>
+   *   <li>Parse and validate the JWT token signature and expiration</li>
+   *   <li>Extract the user identifier from the token subject claim</li>
+   *   <li>Propagate the identity via the X-User-Id request header</li>
+   *   <li>Forward the original Authorization header to downstream services</li>
+   * </ul>
    *
    * @param exchange the current server web exchange containing request and response
    * @param chain    the Gateway filter chain used to forward the request

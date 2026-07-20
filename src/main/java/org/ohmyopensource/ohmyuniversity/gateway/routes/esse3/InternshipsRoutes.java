@@ -1,7 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes.esse3;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,8 +22,13 @@ public class InternshipsRoutes {
 
   // ============ Constructor ============
 
+  /**
+   * Creates a new {@code InternshipsRoutes} instance.
+   *
+   * @param coreServiceUrl base URL of the core service used to forward internship requests
+   */
   public InternshipsRoutes(
-      @Value("${CORE_SERVICE_URL:http://localhost:8083}") String coreServiceUrl) {
+      @Value("${core.service.url:http://localhost:8082}") String coreServiceUrl) {
     this.coreServiceUrl = coreServiceUrl;
   }
 
@@ -38,7 +43,7 @@ public class InternshipsRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing internship routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("internships", r -> r
             .path("/v1/internships/**")

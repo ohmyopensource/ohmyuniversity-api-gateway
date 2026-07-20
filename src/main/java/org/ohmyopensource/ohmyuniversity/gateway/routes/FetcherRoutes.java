@@ -1,7 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
  * They expose orientation and analytics data used by clients.
  *
  * <p>Exposed endpoints:
- * - GET /v1/fetcher/**
+ * <ul>
+ *   <li>GET /v1/fetcher/**</li>
+ * </ul>
  */
 @Component
 public class FetcherRoutes {
@@ -26,7 +28,7 @@ public class FetcherRoutes {
    * @param fetcherServiceUrl base URL of the fetcher service used to forward requests
    */
   public FetcherRoutes(
-      @Value("${fetcher.service.url:http://localhost:8084}") String fetcherServiceUrl) {
+      @Value("${fetcher.service.url:http://localhost:8083}") String fetcherServiceUrl) {
     this.fetcherServiceUrl = fetcherServiceUrl;
   }
 
@@ -41,7 +43,7 @@ public class FetcherRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing fetcher routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("fetcher", r -> r
             .path("/v1/fetcher/**")

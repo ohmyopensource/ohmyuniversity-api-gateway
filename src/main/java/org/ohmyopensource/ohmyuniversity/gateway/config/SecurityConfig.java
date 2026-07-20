@@ -26,37 +26,39 @@ import org.springframework.web.cors.reactive.CorsConfigurationSource;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    private final CorsConfigurationSource corsConfigurationSource;
+  private final CorsConfigurationSource corsConfigurationSource;
 
   // ============ Class Methods ============
 
-    /**
-     * Injects the CORS configuration source defined in {@link CorsConfig}.
-     *
-     * @param corsConfigurationSource the reactive CORS configuration source
-     */
-    public SecurityConfig(CorsConfigurationSource corsConfigurationSource) {
-        this.corsConfigurationSource = corsConfigurationSource;
-    }
+  /**
+   * Injects the CORS configuration source defined in {@link CorsConfig}.
+   *
+   * @param corsConfigurationSource the reactive CORS configuration source
+   */
+  public SecurityConfig(CorsConfigurationSource corsConfigurationSource) {
+    this.corsConfigurationSource = corsConfigurationSource;
+  }
 
-    /**
-     * Configures the Spring Security filter chain for the reactive API Gateway.
-     *
-     * <p>Security rules applied:
-     * - CSRF protection is disabled (stateless API gateway)
-     * - CORS delegated to {@link CorsConfig}
-     * - All incoming requests are permitted at Spring Security level
-     * - Authentication is delegated to {@link GatewayJwtFilter}
-     *
-     * @param http the reactive HTTP security configuration
-     * @return the configured {@link SecurityWebFilterChain}
-     */
-    @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
-                .csrf(CsrfSpec::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .authorizeExchange(exchanges -> exchanges.anyExchange().permitAll());
-        return http.build();
-    }
+  /**
+   * Configures the Spring Security filter chain for the reactive API Gateway.
+   *
+   * <p>Security rules applied:
+   * <ul>
+   *   <li>CSRF protection is disabled (stateless API gateway)</li>
+   *   <li>CORS delegated to {@link CorsConfig}</li>
+   *   <li>All incoming requests are permitted at Spring Security level</li>
+   *   <li>Authentication is delegated to {@link GatewayJwtFilter}</li>
+   * </ul>
+   *
+   * @param http the reactive HTTP security configuration
+   * @return the configured {@link SecurityWebFilterChain}
+   */
+  @Bean
+  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    http
+        .csrf(CsrfSpec::disable)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource))
+        .authorizeExchange(exchanges -> exchanges.anyExchange().permitAll());
+    return http.build();
+  }
 }

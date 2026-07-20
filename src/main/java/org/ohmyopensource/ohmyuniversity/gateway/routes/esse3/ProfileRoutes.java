@@ -1,7 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes.esse3;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,8 +25,13 @@ public class ProfileRoutes {
 
   // ============ Constructor ============
 
+  /**
+   * Creates a new {@code ProfileRoutes} instance.
+   *
+   * @param coreServiceUrl base URL of the core service used to forward profile requests
+   */
   public ProfileRoutes(
-      @Value("${CORE_SERVICE_URL:http://localhost:8083}") String coreServiceUrl) {
+      @Value("${core.service.url:http://localhost:8082}") String coreServiceUrl) {
     this.coreServiceUrl = coreServiceUrl;
   }
 
@@ -41,7 +46,7 @@ public class ProfileRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing profile routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("profile", r -> r
             .path("/v1/profile/**")

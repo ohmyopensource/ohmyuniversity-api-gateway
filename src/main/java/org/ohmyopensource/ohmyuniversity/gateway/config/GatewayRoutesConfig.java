@@ -33,65 +33,65 @@ import org.springframework.context.annotation.Configuration;
  * <p>Exposed API structure:
  * <pre>
  * Auth
- *   POST /v1/auth/**               → core:8083
+ *   POST /v1/auth/**               → auth:8081
  *
  * Profile (ESSE3 — anagrafica-service, carriere-service, badge-service)
- *   GET  /v1/profile/persona       → core:8083
- *   GET  /v1/profile/info          → core:8083
- *   GET  /v1/profile/avatar        → core:8083
- *   GET  /v1/profile/badge         → core:8083
+ *   GET  /v1/profile/persona       → core:8082
+ *   GET  /v1/profile/info          → core:8082
+ *   GET  /v1/profile/avatar        → core:8082
+ *   GET  /v1/profile/badge         → core:8082
  *
  * Career (ESSE3 — libretto-service, piani-service)
- *   GET  /v1/career/transcript     → core:8083
- *   GET  /v1/career/grades         → core:8083
- *   GET  /v1/career/study-plan     → core:8083
- *   GET  /v1/career/exam-history   → core:8083
- *   GET  /v1/career/recommendations→ core:8083
+ *   GET  /v1/career/transcript     → core:8082
+ *   GET  /v1/career/grades         → core:8082
+ *   GET  /v1/career/study-plan     → core:8082
+ *   GET  /v1/career/exam-history   → core:8082
+ *   GET  /v1/career/recommendations→ core:8082
  *
  * Exams (ESSE3 — calesa-service, libretto-service, questionari-service)
- *   GET  /v1/exams/sessions        → core:8083
- *   GET  /v1/exams/bookable        → core:8083
- *   GET  /v1/exams/bookings        → core:8083
- *   POST /v1/exams/bookings/legacy → core:8083
- *   GET  /v1/exams/surveys         → core:8083
- *   POST /v1/exams/bookings          → core:8083
- *   POST /v1/exams/bookings/cancel   → core:8083
+ *   GET  /v1/exams/sessions        → core:8082
+ *   GET  /v1/exams/bookable        → core:8082
+ *   GET  /v1/exams/bookings        → core:8082
+ *   POST /v1/exams/bookings/legacy → core:8082
+ *   GET  /v1/exams/surveys         → core:8082
+ *   POST /v1/exams/bookings          → core:8082
+ *   POST /v1/exams/bookings/cancel   → core:8082
  *
  * Fees (ESSE3 — tasse-service)
- *   GET  /v1/fees/status           → core:8083
- *   GET  /v1/fees/invoices         → core:8083
- *   GET  /v1/fees/refunds          → core:8083
- *   GET  /v1/fees/payments         → core:8083
+ *   GET  /v1/fees/status           → core:8082
+ *   GET  /v1/fees/invoices         → core:8082
+ *   GET  /v1/fees/refunds          → core:8082
+ *   GET  /v1/fees/payments         → core:8082
  *
  * Internships (ESSE3 — tirocini-service)
- *   GET  /v1/internships/applications → core:8083
+ *   GET  /v1/internships/applications → core:8082
  *
  * Struttura (ESSE3 — struttura-service, public data)
- *   GET  /v1/struttura/facolta         → core:8083
- *   GET  /v1/struttura/sedi/{sedeId}   → core:8083
+ *   GET  /v1/struttura/facolta         → core:8082
+ *   GET  /v1/struttura/sedi/{sedeId}   → core:8082
  *
  * Course Catalogue (Cineca Course Catalogue — separate product from ESSE3)
- *   GET  /v1/course-catalogue/plan      → core:8083
- *   GET  /v1/course-catalogue/syllabus  → core:8083
+ *   GET  /v1/course-catalogue/plan      → core:8082
+ *   GET  /v1/course-catalogue/syllabus  → core:8082
  *
  * Agenda (OhMyU native + university events)
- *   GET|POST|PUT|DELETE /v1/agenda/events/**            → core:8083
- *   GET|POST            /v1/agenda/university-events/** → core:8083
+ *   GET|POST|PUT|DELETE /v1/agenda/events/**            → core:8082
+ *   GET|POST            /v1/agenda/university-events/** → core:8082
  *
  * Email
- *   /v1/email/**                   → core:8083
+ *   /v1/email/**                   → core:8082
  *
  * External services
- *   /v1/university/**              → core:8083
+ *   /v1/university/**              → core:8082
  *
  * Canteen
- *   /v1/canteen/**                 → canteen:8082
+ *   /v1/canteen/**                 → canteen:8085
  *
  * Chat
- *   /v1/chat/**                    → chat:8081
+ *   /v1/chat/**                    → chat:8084
  *
  * Fetcher (public)
- *   /v1/fetcher/**                 → fetcher:8084
+ *   /v1/fetcher/**                 → fetcher:8083
  * </pre>
  */
 @Configuration
@@ -119,6 +119,26 @@ public class GatewayRoutesConfig {
 
   // ============ Constructor ============
 
+  /**
+   * Creates the gateway routes configuration and injects every domain-specific {@code *Routes}
+   * component. All routes are aggregated and registered together by
+   * {@link #routes(RouteLocatorBuilder)}.
+   *
+   * @param profileRoutes          profile-related ESSE3 routes
+   * @param careerRoutes           career-related ESSE3 routes
+   * @param examsRoutes            exam-related ESSE3 routes
+   * @param feesRoutes             fee-related ESSE3 routes
+   * @param internshipsRoutes      internship-related ESSE3 routes
+   * @param courseCatalogueRoutes  Cineca Course Catalogue enrichment routes
+   * @param strutturaRoutes        faculty/department/location ESSE3 routes
+   * @param authRoutes             authentication routes (public, forwarded to the auth service)
+   * @param agendaRoutes           personal and university calendar routes
+   * @param externalServicesRoutes university external services routes
+   * @param emailRoutes            institutional email integration routes
+   * @param canteenRoutes          canteen service routes
+   * @param chatRoutes             chat service routes
+   * @param fetcherRoutes          public fetcher service routes
+   */
   public GatewayRoutesConfig(
       ProfileRoutes profileRoutes,
       CareerRoutes careerRoutes,
@@ -155,8 +175,13 @@ public class GatewayRoutesConfig {
   /**
    * Builds and registers all API Gateway routes.
    *
-   * <p>Registration order: auth first (public), then ESSE3 routes,
-   * then OhMyU-native routes, then infrastructure routes (fetcher).
+   * <p>Registration order:
+   * <ol>
+   *   <li>auth first (public)</li>
+   *   <li>then ESSE3 routes</li>
+   *   <li>then OhMyU-native routes</li>
+   *   <li>then infrastructure routes (fetcher)</li>
+   * </ol>
    *
    * @param builder the Spring Cloud Gateway route builder
    * @return a fully built {@link RouteLocator} containing all registered routes

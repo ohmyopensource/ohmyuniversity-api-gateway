@@ -1,20 +1,18 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
  * Route configuration for canteen-related endpoints.
  *
  * <p>These routes are protected and require a valid OhMyUniversity JWT.
- * Authentication is enforced
- * by {@link org.ohmyopensource.ohmyuniversity.gateway.config.GatewayJwtFilter}.
+ * Authentication is enforced by
+ * {@link org.ohmyopensource.ohmyuniversity.gateway.config.GatewayJwtFilter}.
  *
  * <p>Exposed canteen endpoints:
- * - GET /v1/canteen/menu
- * - POST /v1/canteen/orders
- * - GET /v1/canteen/orders
+ * - GET /v1/canteen/menu - POST /v1/canteen/orders - GET /v1/canteen/orders
  */
 @Component
 public class CanteenRoutes {
@@ -29,7 +27,7 @@ public class CanteenRoutes {
    * @param canteenServiceUrl base URL of the canteen service used for routing requests
    */
   public CanteenRoutes(
-      @Value("${CANTEEN_SERVICE_URL:http://localhost:8082}") String canteenServiceUrl) {
+      @Value("${canteen.service.url:http://localhost:8085}") String canteenServiceUrl) {
     this.canteenServiceUrl = canteenServiceUrl;
   }
 
@@ -44,7 +42,7 @@ public class CanteenRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing canteen routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("canteen", r -> r
             .path("/v1/canteen/**")

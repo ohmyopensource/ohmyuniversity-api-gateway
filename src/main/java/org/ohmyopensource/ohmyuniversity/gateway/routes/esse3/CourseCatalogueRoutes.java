@@ -1,7 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes.esse3;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,8 +12,10 @@ import org.springframework.stereotype.Component;
  *
  * <p>Exposed endpoints:
  * <ul>
- *   <li>{@code GET /v1/course-catalogue/plan}     — full multi-year course plan for the student's cohort</li>
- *   <li>{@code GET /v1/course-catalogue/syllabus} — prerequisites and CFU breakdown for one activity</li>
+ *   <li>{@code GET /v1/course-catalogue/plan}     — full multi-year course plan for the
+ *   student's cohort</li>
+ *   <li>{@code GET /v1/course-catalogue/syllabus} — prerequisites and CFU breakdown for one
+ *   activity</li>
  * </ul>
  */
 @Component
@@ -23,8 +25,13 @@ public class CourseCatalogueRoutes {
 
   // ============ Constructor ============
 
+  /**
+   * Creates a new {@code CourseCatalogueRoutes} instance.
+   *
+   * @param coreServiceUrl base URL of the core service used to forward course catalogue requests
+   */
   public CourseCatalogueRoutes(
-      @Value("${CORE_SERVICE_URL:http://localhost:8083}") String coreServiceUrl) {
+      @Value("${core.service.url:http://localhost:8082}") String coreServiceUrl) {
     this.coreServiceUrl = coreServiceUrl;
   }
 
@@ -39,7 +46,7 @@ public class CourseCatalogueRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing course catalogue routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("course-catalogue", r -> r
             .path("/v1/course-catalogue/**")

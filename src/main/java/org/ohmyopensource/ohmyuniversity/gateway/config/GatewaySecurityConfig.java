@@ -18,12 +18,15 @@ public class GatewaySecurityConfig {
    * List of URI prefixes that are excluded from JWT authentication.
    *
    * <p>These endpoints are accessible without authentication:
-   * - /v1/auth/ -> authentication endpoints
-   * - /v1/email/auth/callback -> OAuth2 callback from Microsoft
-   * - /v1/fetcher/ -> public analytics and statistics
-   * - /actuator/ -> health checks and monitoring endpoints
-   * - /swagger-ui -> API documentation UI
-   * - /v3/api-docs -> OpenAPI specification
+   * <ul>
+   *   <li>/v1/auth/ -> authentication endpoints</li>
+   *   <li>/v1/email/auth/callback -> OAuth2 callback from Microsoft</li>
+   *   <li>/v1/fetcher/ -> public analytics and statistics</li>
+   *   <li>/actuator/ -> health checks and monitoring endpoints</li>
+   *   <li>/swagger-ui -> API documentation UI</li>
+   *   <li>/v3/api-docs -> OpenAPI specification</li>
+   * </ul>
+   *
    */
   private static final List<String> PUBLIC_PREFIXES = List.of(
       "/v1/auth/",
@@ -43,8 +46,7 @@ public class GatewaySecurityConfig {
    * Matching is performed using prefix comparison (startsWith).
    *
    * @param path the HTTP request path to evaluate
-   * @return {@code true} if the path does not require JWT authentication,
-   *         {@code false} otherwise
+   * @return {@code true} if the path does not require JWT authentication, {@code false} otherwise
    */
   public boolean isPublic(String path) {
     return PUBLIC_PREFIXES.stream().anyMatch(path::startsWith);

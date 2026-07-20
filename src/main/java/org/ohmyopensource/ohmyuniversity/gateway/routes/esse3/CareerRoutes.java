@@ -1,7 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes.esse3;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  *   <li>{@code GET /v1/career/grades}         — grade averages and CFU statistics</li>
  *   <li>{@code GET /v1/career/study-plan}     — planned academic activities</li>
  *   <li>{@code GET /v1/career/exam-history}   — all attempts grouped by activity</li>
- *   <li>{@code GET /v1/career/recommendations}— prioritised pending exams</li>
+ *   <li>{@code GET /v1/career/recommendations}— prioritized pending exams</li>
  * </ul>
  */
 @Component
@@ -26,8 +26,13 @@ public class CareerRoutes {
 
   // ============ Constructor ============
 
+  /**
+   * Creates a new {@code CareerRoutes} instance.
+   *
+   * @param coreServiceUrl base URL of the core service used to forward career requests
+   */
   public CareerRoutes(
-      @Value("${CORE_SERVICE_URL:http://localhost:8083}") String coreServiceUrl) {
+      @Value("${core.service.url:http://localhost:8082}") String coreServiceUrl) {
     this.coreServiceUrl = coreServiceUrl;
   }
 
@@ -42,7 +47,7 @@ public class CareerRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing career routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("career", r -> r
             .path("/v1/career/**")

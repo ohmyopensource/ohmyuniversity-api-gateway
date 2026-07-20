@@ -1,7 +1,7 @@
 package org.ohmyopensource.ohmyuniversity.gateway.routes.esse3;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder.Builder;
+import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,8 +23,13 @@ public class StrutturaRoutes {
 
   // ============ Constructor ============
 
+  /**
+   * Creates a new {@code StrutturaRoutes} instance.
+   *
+   * @param coreServiceUrl base URL of the core service used to forward struttura requests
+   */
   public StrutturaRoutes(
-      @Value("${CORE_SERVICE_URL:http://localhost:8083}") String coreServiceUrl) {
+      @Value("${core.service.url:http://localhost:8082}") String coreServiceUrl) {
     this.coreServiceUrl = coreServiceUrl;
   }
 
@@ -39,7 +44,7 @@ public class StrutturaRoutes {
    * @param builder the Spring Cloud Gateway route builder
    * @return the updated builder containing struttura routes
    */
-  public Builder register(Builder builder) {
+  public RouteLocatorBuilder.Builder register(RouteLocatorBuilder.Builder builder) {
     return builder
         .route("struttura", r -> r
             .path("/v1/struttura/**")
